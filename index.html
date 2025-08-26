@@ -75,16 +75,12 @@
   const closeBtn = document.getElementById('closeBtn');
   let size, DPR = window.devicePixelRatio || 1, spinning = false;
 
-  // ✅ Paste your Google Apps Script Web App URL
-  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwLD2-DiayBcLVqvA0n8j2D75AsUByT-nzrsMBAef54-V-Eznb_cefg2HZoe-GzRnnXfA/exec";
+  // ✅ Replace with your deployed Google Apps Script URL
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzY4Yn_ojhPNcXKh38lQI3C3levb2anZp7r70PJJ4ytv5xCJMzuRZth7VvCx3p6INsbGQ/exec";
 
   async function checkAndSaveBeforeSpin(phone, prize) {
     try {
-      const response = await fetch(WEB_APP_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: phone, prize: "₹" + prize })
-      });
+      const response = await fetch(`${WEB_APP_URL}?phone=${encodeURIComponent(phone)}&prize=${encodeURIComponent("₹"+prize)}`);
       const data = await response.json();
       return data; // {status:"ok" or "exists", prize:"..."}
     } catch (err) {
