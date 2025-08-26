@@ -179,34 +179,36 @@
 
   function normPhone(p){return p.replace(/\D/g,'').replace(/^91/,'').replace(/^0/,'');}
 
-  centerBtn.onclick = async ()=>{
-    if(spinning) return;
-    let phone = normPhone(phoneInput.value);
-    if(!/^\d{10}$/.test(phone)){alert("Enter valid phone");return;}
+ centerBtn.onclick = async () => {
+  if (spinning) return;
+  let phone = normPhone(phoneInput.value);
+  if (!/^\d{10}$/.test(phone)) {
+    alert("Enter valid phone");
+    return;
+  }
 
-    let prize = cyclePrizes[cycleIndex];
-    cycleIndex = (cycleIndex+1) % cyclePrizes.length;
+  // 🎯 Choose prize locally first
+  let prize = cyclePrizes[cycleIndex];
+  cycleIndex = (cycleIndex + 1) % cyclePrizes.length;
 
-    // ✅ Check with Google Sheet BEFORE spinning
-    let result = await checkAndSaveBeforeSpin(phone, prize);
+  // 🎡 Start spin immediately
+  const index = segments.findIndex(s => s.includes(prize));
+  spinTo(index, prize);
 
-    if(result.status === "exists"){
-      modalTxt.textContent = `This number already played and won ${result.prize}`;
-      modal.style.display = 'flex';
-      return; // block spin
-    }
-    if(result.status === "ok"){
-      const index = segments.findIndex(s=>s.includes(prize));
-      spinTo(index, prize);
+  // ⏳ Save to Google Sheets in background
+  checkAndSaveBeforeSpin(phone, prize).then(result => {
+    if (result.status === "exists") {
+      // They already played → optional correction
+      console.log("Already played before, prize:", result.prize);
+      // You can show a message if you want
+    } else if (result.status === "ok") {
+      console.log("Saved successfully");
     } else {
-      alert("Error saving to Google Sheets. Try again later.");
+      console.warn("Error saving to Google Sheets:", result.message || result);
     }
-  };
-
-  closeBtn.onclick=()=>modal.style.display='none';
-  window.addEventListener('resize',resize);
-  resize();
-})();
+  });
+};
 </script>
 </body>
 </html>
+
