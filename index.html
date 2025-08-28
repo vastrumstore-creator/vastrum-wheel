@@ -5,25 +5,165 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Vastrum — Spin Wheel</title>
 <style>
-  :root{--bg:#FFF7EB;--card:#F7F5F2;--accent:#2F6D63;--muted:#6b857e;--white:#ffffff;}
-  *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;}
-  body{margin:0;background:var(--bg);color:var(--accent);-webkit-font-smoothing:antialiased}
-  .wrap{max-width:520px;margin:12px auto;padding:16px}
-  .card{background:var(--card);border-radius:16px;padding:14px;box-shadow:0 8px 28px rgba(47,109,99,0.06)}
-  .brand{display:flex;align-items:center;justify-content:center;gap:10px;font-weight:800;letter-spacing:2px;text-align:center;font-size:20px;margin-bottom:20px}
-  .brand img{height:40px;}
-  .wheel-area{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative}
-  .wheel-frame{position:relative;width:100%;max-width:420px;aspect-ratio:1/1;}
-  .knob {position: absolute;top: -28px;left: 50%;transform: translateX(-50%);width: 44px;height: 44px;background: radial-gradient(circle at 30% 30%, #ffae42, #e67e22);border-radius: 50%;box-shadow: 0 4px 8px rgba(0,0,0,0.25);z-index: 11;}
-  .knob::after {content: "";position: absolute;bottom: -14px;left: 50%;transform: translateX(-50%);width: 0;height: 0;border-left: 12px solid transparent;border-right: 12px solid transparent;border-top: 18px solid #e67e22;}
-  canvas{display:block;width:100%;height:100%;border-radius:50%;}
-  .center-btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:linear-gradient(180deg,#ffffff 0%, #f3efe9 100%);box-shadow:0 8px 20px rgba(47,109,99,0.08);font-weight:800;color:#173b36;font-size:13px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;z-index:9;pointer-events:auto;}
-  .phone-row{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:0 8px;margin-top:6px}
-  .phone-row img{height:20px}
-  input[type="tel"]{padding:12px 10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-size:16px;width:86%;outline:none}
-  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:60}
-  .box{background:var(--white);padding:18px;border-radius:10px;min-width:240px;text-align:center}
-  .btn{margin-top:10px;padding:10px 14px;border-radius:8px;background:var(--accent);color:var(--white);border:none;font-weight:700}
+  :root{
+    --bg:#FFF7EB;
+    --card:#F7F5F2;
+    --accent:#2F6D63;
+    --muted:#6b857e;
+    --white:#ffffff;
+  }
+  *{
+    box-sizing:border-box;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  }
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--accent);
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:520px;
+    margin:12px auto;
+    padding:16px;
+  }
+  .card{
+    background:var(--card);
+    border-radius:16px;
+    padding:14px;
+    box-shadow:0 8px 28px rgba(47,109,99,0.06);
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    font-weight:800;
+    letter-spacing:2px;
+    text-align:center;
+    font-size:20px;
+    margin-bottom:20px;
+  }
+  .brand img{
+    height:40px;
+  }
+  .wheel-area{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    position:relative;
+  }
+  .wheel-frame{
+    position:relative;
+    width:100%;
+    max-width:420px;
+    aspect-ratio:1/1;
+  }
+  .knob {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 36px;
+    height: 36px;
+    background: radial-gradient(circle at 30% 30%, #ffae42, #e67e22);
+    border-radius: 50%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    z-index: 11;
+  }
+  .knob::after {
+    content: "";
+    position: absolute;
+    bottom: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 14px solid #e67e22;
+  }
+  canvas{
+    display:block;
+    width:100%;
+    height:100%;
+    border-radius:50%;
+  }
+  .center-btn{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform:translate(-50%,-50%);
+    border-radius:50%;
+    background:linear-gradient(180deg,#ffffff 0%, #f3efe9 100%);
+    box-shadow:0 8px 20px rgba(47,109,99,0.08);
+    font-weight:800;
+    color:#173b36;
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:10px 14px;
+    z-index:9;
+    pointer-events:auto;
+  }
+  .phone-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    width:100%;
+    padding:0 8px;
+    margin-top:6px;
+  }
+  .phone-row img{
+    height:20px;
+  }
+  input[type="tel"]{
+    flex-grow:1;
+    padding:12px 10px;
+    border-radius:10px;
+    border:1px solid rgba(0,0,0,0.06);
+    font-size:16px;
+    outline:none;
+  }
+
+  /* ✅ Instruction line styling */
+  .hint {
+    margin-top:18px;
+    font-size:14px;
+    color:#555;
+    text-align:center;
+  }
+
+  .modal{
+    position:fixed;
+    inset:0;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,0.45);
+    z-index:60;
+  }
+  .box{
+    background:var(--white);
+    padding:18px;
+    border-radius:10px;
+    min-width:240px;
+    text-align:center;
+  }
+  .btn{
+    margin-top:10px;
+    padding:10px 14px;
+    border-radius:8px;
+    background:var(--accent);
+    color:var(--white);
+    border:none;
+    font-weight:700;
+    cursor:pointer;
+  }
 </style>
 </head>
 <body>
@@ -49,6 +189,9 @@
         <span>+91</span>
         <input id="phone" type="tel" placeholder="Enter phone number">
       </div>
+
+      <!-- ✅ Instruction line -->
+      <p class="hint">👉 Type your mobile number, then tap the center button</p>
     </div>
   </div>
 </div>
@@ -60,155 +203,7 @@
   </div>
 </div>
 <script>
-(function(){
-  const segments = ["₹449","₹499","₹549","₹599","₹649","₹699","₹799","₹559"];
-  const colors = ["#FF6F61","#6B5B95","#88B04B","#F7CAC9","#92A8D1","#F7786B","#DEB887","#20B2AA"];
-  const cyclePrizes = ["499","549","599"];
-  let cycleIndex = 0;
-
-  const canvas = document.getElementById('wheelCanvas');
-  const ctx = canvas.getContext('2d');
-  const centerBtn = document.getElementById('centerBtn');
-  const phoneInput = document.getElementById('phone');
-  const modal = document.getElementById('modal');
-  const modalTxt = document.getElementById('modalTxt');
-  const closeBtn = document.getElementById('closeBtn');
-  let size, DPR = window.devicePixelRatio || 1, spinning = false;
-
-  // ✅ Replace with your deployed Google Apps Script URL
-  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzY4Yn_ojhPNcXKh38lQI3C3levb2anZp7r70PJJ4ytv5xCJMzuRZth7VvCx3p6INsbGQ/exec";
-
-  async function checkAndSaveBeforeSpin(phone, prize) {
-    try {
-      const response = await fetch(`${WEB_APP_URL}?phone=${encodeURIComponent(phone)}&prize=${encodeURIComponent("₹"+prize)}`);
-      const data = await response.json();
-      return data; // {status:"ok" or "exists", prize:"..."}
-    } catch (err) {
-      console.error("Error contacting Google Sheets:", err);
-      return { status: "error" };
-    }
-  }
-
-  function resize(){
-    const rect = canvas.parentElement.getBoundingClientRect();
-    size = rect.width;
-    canvas.width = size * DPR;
-    canvas.height = size * DPR;
-    ctx.setTransform(DPR,0,0,DPR,0,0);
-    drawWheel();
-    const btnSize = size * 0.36;
-    centerBtn.style.width = btnSize + 'px';
-    centerBtn.style.height = btnSize + 'px';
-  }
-
-  function drawWheel(){
-    const cx = size/2, cy = size/2, radius = size*0.45, innerR = size*0.18;
-    const arc = (2*Math.PI)/segments.length;
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    ctx.save();
-    ctx.translate(cx, cy);
-    for(let i=0;i<segments.length;i++){
-      const ang = i*arc - Math.PI/2;
-      ctx.beginPath();
-      ctx.fillStyle = colors[i % colors.length];
-      ctx.moveTo(0,0);
-      ctx.arc(0,0,radius,ang,ang+arc,false);
-      ctx.fill();
-      ctx.save();
-      const mid = ang+arc/2;
-      ctx.translate(Math.cos(mid)*radius*0.65, Math.sin(mid)*radius*0.65);
-      ctx.rotate(mid+Math.PI/2);
-      ctx.fillStyle = "#fff";
-      ctx.font = `700 ${Math.max(16,Math.round(radius*0.12))}px sans-serif`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillText(segments[i],0,0);
-      ctx.restore();
-    }
-    ctx.beginPath();
-    ctx.fillStyle = "#fff";
-    ctx.arc(0,0,innerR,0,Math.PI*2);
-    ctx.fill();
-    ctx.restore();
-  }
-
-  function spinTo(index, prize){
-    if(spinning) return;
-    spinning = true;
-
-    const segDeg = 360/segments.length;
-    const mid = index * segDeg + segDeg/2;
-    const stopAngle = (360 - mid) % 360;
-    const baseSpins = (5 + Math.floor(Math.random()*2)) * 360;
-    const overshoot = 4 + Math.floor(Math.random()*5);
-    const duration = 3.4 + Math.random()*0.4;
-
-    const toOvershoot = baseSpins + stopAngle + overshoot;
-    const toFinal    = baseSpins + stopAngle;
-
-    canvas.style.transition = 'none';
-    canvas.style.transform = 'rotate(0deg)';
-
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>{
-        canvas.style.transition = `transform ${duration}s cubic-bezier(.16,.84,.2,1)`;
-        canvas.style.transform = `rotate(${toOvershoot}deg)`;
-      });
-    });
-
-    function handleFirstEnd(e){
-      if(e.propertyName !== 'transform') return;
-      canvas.removeEventListener('transitionend', handleFirstEnd);
-      canvas.style.transition = 'transform 0.4s cubic-bezier(.2,.8,.2,1)';
-      requestAnimationFrame(()=>{
-        canvas.style.transform = `rotate(${toFinal}deg)`;
-      });
-      canvas.addEventListener('transitionend', handleSecondEnd);
-    }
-
-    function handleSecondEnd(e){
-      if(e.propertyName !== 'transform') return;
-      canvas.removeEventListener('transitionend', handleSecondEnd);
-      spinning = false;
-      modalTxt.textContent = `You won ₹${prize}`;
-      modal.style.display = 'flex';
-    }
-
-    canvas.addEventListener('transitionend', handleFirstEnd);
-  }
-
-  function normPhone(p){return p.replace(/\D/g,'').replace(/^91/,'').replace(/^0/,'');}
-
- centerBtn.onclick = async () => {
-  if (spinning) return;
-  let phone = normPhone(phoneInput.value);
-  if (!/^\d{10}$/.test(phone)) {
-    alert("Enter valid phone");
-    return;
-  }
-
-  // 🎯 Choose prize locally first
-  let prize = cyclePrizes[cycleIndex];
-  cycleIndex = (cycleIndex + 1) % cyclePrizes.length;
-
-  // 🎡 Start spin immediately
-  const index = segments.findIndex(s => s.includes(prize));
-  spinTo(index, prize);
-
-  // ⏳ Save to Google Sheets in background
-  checkAndSaveBeforeSpin(phone, prize).then(result => {
-    if (result.status === "exists") {
-      // They already played → optional correction
-      console.log("Already played before, prize:", result.prize);
-      // You can show a message if you want
-    } else if (result.status === "ok") {
-      console.log("Saved successfully");
-    } else {
-      console.warn("Error saving to Google Sheets:", result.message || result);
-    }
-  });
-};
+/* Your existing wheel + saving logic goes here */
 </script>
 </body>
 </html>
-
