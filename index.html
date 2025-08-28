@@ -169,25 +169,49 @@
   function getUsed(){return JSON.parse(localStorage.getItem('vastrum_used')||'{}');}
   function setUsed(v){localStorage.setItem('vastrum_used',JSON.stringify(v));}
 
-  centerBtn.onclick = ()=>{
-    if(spinning) return;
-    let phone = normPhone(phoneInput.value);
-    if(!/^\d{10}$/.test(phone)){alert("Enter valid phone");return;}
+centerBtn.onclick = ()=>{
+  if(spinning) return;
+  let phone = normPhone(phoneInput.value);
+  if(!/^\d{10}$/.test(phone)){alert("Enter a valid 10-digit mobile number");return;}
 
-    let used = getUsed();
-    if(used[phone]){
-      modalTxt.textContent = `This number already played and won ₹${used[phone]}`;
-      modal.style.display = 'flex';
-      return;
-    }
+  // 🎯 Pick prize locally first
+  let prize = cyclePrizes[cycleIndex];
+  cycleIndex = (cycleIndex+1) % cyclePrizes.length;
 
-    let prize = cyclePrizes[cycleIndex];
-    cycleIndex = (cycleIndex+1) % cyclePrizes.length;
-    used[phone] = prize; setUsed(used);
+  // 🎡 Start spin immediately
+  const index = segments.findIndex(s => s.includes(prize));
+  spinTo(index, prize);
 
-    const index = segments.findIndex(s=>s.includes(prize));
-    spinTo(index, prize);
-  };
+  // ⏳ Check & save in Google Sheets in background
+  fetch("https://script.google.com/macros/s/AKfycbzY4Yn_ojhPNcXKh38lQI3C3levb2anZp7r70PJJ4ytv5xCJMzuRZth7VvCx3p6INsbGQ/exec", {
+    method: "POST",
+    body: JSON.stringify({ phone, prize }),
+    headers: { "Content-Type": "application/json" }
+  })
+  .then(res => res.json())
+  .then(result => {
+    setTimeout(() => { // wait for spin animation to finish (~3.5s)
+      if(result.status === "exists"){
+        modalTxt.textContent = "⚠️ This number has already played!";
+        modal.style.display = "flex";
+      } else if(result.status === "ok"){
+        modalTxt.textContent = `🎉 You won ₹${prize}`;
+        modal.style.display = "flex";
+      } else {
+        modalTxt.textContent = "Error saving spin. Try again!";
+        modal.style.display = "flex";
+      }
+    }, 3600); // match your spin duration
+  })
+  .catch(err => {
+    console.error("Error contacting Google Sheets:", err);
+    setTimeout(()=>{
+      modalTxt.textContent = "⚠️ Could not connect to server. Try again later.";
+      modal.style.display = "flex";
+    }, 3600);
+  });
+};
+
 
   closeBtn.onclick=()=>modal.style.display='none';
   window.addEventListener('resize',resize);
