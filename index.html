@@ -44,11 +44,16 @@
           </div>
         </div>
       </div>
-      <div class="phone-row">
+<div class="phone-row">
         <img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" alt="IN Flag">
         <span>+91</span>
         <input id="phone" type="tel" placeholder="Enter phone number">
       </div>
+
+      <!-- ✅ Instruction line below everything -->
+      <p style="text-align:center; font-size:15px; color:#173b36; margin-top:14px; font-weight:700;">
+        Enter your mobile number and tap the wheel’s center to spin.
+      </p>
     </div>
   </div>
 </div>
@@ -75,31 +80,14 @@
   const closeBtn = document.getElementById('closeBtn');
   let size, DPR = window.devicePixelRatio || 1, spinning = false;
 
-  // ✅ Replace with your actual Apps Script Web App URL
-  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxoRo0tdbhhYnxNvXxc2Bo6dgIROqopQKNdeHt3uC2vbEmlSvGlZgLqOFeD8x3dw_OjWg/exec";
+  // ✅ Replace with your deployed Google Apps Script URL
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzY4Yn_ojhPNcXKh38lQI3C3levb2anZp7r70PJJ4ytv5xCJMzuRZth7VvCx3p6INsbGQ/exec";
 
-  // Preloaded numbers
-  let existingNumbers = new Set();
-
-  async function preloadNumbers() {
-    try {
-      const res = await fetch(`${WEB_APP_URL}?mode=all`);
-      const data = await res.json();
-      if (data.status === "ok") {
-        existingNumbers = new Set(data.phones);
-        console.log("Preloaded numbers:", existingNumbers.size);
-      }
-    } catch (err) {
-      console.error("Failed to preload numbers", err);
-    }
-  }
-  preloadNumbers();
-
-  async function checkAndSave(phone, prize) {
+  async function checkAndSaveBeforeSpin(phone, prize) {
     try {
       const response = await fetch(`${WEB_APP_URL}?phone=${encodeURIComponent(phone)}&prize=${encodeURIComponent("₹"+prize)}`);
       const data = await response.json();
-      return data;
+      return data; // {status:"ok" or "exists", prize:"..."}
     } catch (err) {
       console.error("Error contacting Google Sheets:", err);
       return { status: "error" };
@@ -149,13 +137,16 @@
     ctx.restore();
   }
 
-  function spinTo(index, prize, duration, onEnd){
+  function spinTo(index, prize){
+    if(spinning) return;
     spinning = true;
+
     const segDeg = 360/segments.length;
     const mid = index * segDeg + segDeg/2;
     const stopAngle = (360 - mid) % 360;
-    const baseSpins = 5 * 360;
-    const overshoot = 6;
+    const baseSpins = (5 + Math.floor(Math.random()*2)) * 360;
+    const overshoot = 4 + Math.floor(Math.random()*5);
+    const duration = 3.4 + Math.random()*0.4;
 
     const toOvershoot = baseSpins + stopAngle + overshoot;
     const toFinal    = baseSpins + stopAngle;
@@ -184,7 +175,8 @@
       if(e.propertyName !== 'transform') return;
       canvas.removeEventListener('transitionend', handleSecondEnd);
       spinning = false;
-      if(onEnd) onEnd();
+      modalTxt.textContent = `You won ₹${prize}`;
+      modal.style.display = 'flex';
     }
 
     canvas.addEventListener('transitionend', handleFirstEnd);
@@ -192,37 +184,28 @@
 
   function normPhone(p){return p.replace(/\D/g,'').replace(/^91/,'').replace(/^0/,'');}
 
-  centerBtn.onclick = async () => {
+  centerBtn.onclick = async ()=>{
     if(spinning) return;
     let phone = normPhone(phoneInput.value);
     if(!/^\d{10}$/.test(phone)){alert("Enter valid phone");return;}
 
-    // ✅ Instant local check
-    if (existingNumbers.has(phone)) {
-      modalTxt.textContent = "This number already played!";
-      modal.style.display = "flex";
-      return;
-    }
-
     let prize = cyclePrizes[cycleIndex];
     cycleIndex = (cycleIndex+1) % cyclePrizes.length;
-    const index = segments.findIndex(s=>s.includes(prize));
 
-    let resultPromise = checkAndSave(phone, prize);
-    let ended = false;
+    // ✅ Check with Google Sheet BEFORE spinning
+    let result = await checkAndSaveBeforeSpin(phone, prize);
 
-    // Normal spin: 4 seconds
-    spinTo(index, prize, 4, async () => {
-      if(ended) return;
-      let result = await resultPromise;
-      if(result.status === "ok"){
-        existingNumbers.add(phone); // update local cache
-        modalTxt.textContent = `You won ₹${prize}`;
-      } else {
-        modalTxt.textContent = "Error saving. Try again later.";
-      }
-      modal.style.display = "flex";
-    });
+    if(result.status === "exists"){
+      modalTxt.textContent = `This number already played and won ${result.prize}`;
+      modal.style.display = 'flex';
+      return; // block spin
+    }
+    if(result.status === "ok"){
+      const index = segments.findIndex(s=>s.includes(prize));
+      spinTo(index, prize);
+    } else {
+      alert("Error saving to Google Sheets. Try again later.");
+    }
   };
 
   closeBtn.onclick=()=>modal.style.display='none';
