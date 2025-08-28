@@ -44,13 +44,11 @@
           </div>
         </div>
       </div>
-<div class="phone-row">
+      <div class="phone-row">
         <img src="https://upload.wikimedia.org/wikipedia/en/4/41/Flag_of_India.svg" alt="IN Flag">
         <span>+91</span>
         <input id="phone" type="tel" placeholder="Enter phone number">
       </div>
-
-      <!-- ✅ Instruction line below everything -->
       <p style="text-align:center; font-size:15px; color:#173b36; margin-top:14px; font-weight:700;">
         Enter your mobile number and tap the wheel’s center to spin.
       </p>
@@ -64,6 +62,7 @@
     <button id="closeBtn" class="btn">OK</button>
   </div>
 </div>
+
 <script>
 (function(){
   const segments = ["₹449","₹499","₹549","₹599","₹649","₹699","₹799","₹559"];
@@ -80,14 +79,18 @@
   const closeBtn = document.getElementById('closeBtn');
   let size, DPR = window.devicePixelRatio || 1, spinning = false;
 
-  // ✅ Replace with your deployed Google Apps Script URL
+  // ✅ Your deployed Google Apps Script URL
   const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyOMHKm0nzIes3_Iblp4bvNSx0mD9DatP_Sn1tO-tiZxn4_xFsrqvizboJ5JC7ukhhMsg/exec";
 
   async function checkAndSaveBeforeSpin(phone, prize) {
     try {
-      const response = await fetch(`${WEB_APP_URL}?phone=${encodeURIComponent(phone)}&prize=${encodeURIComponent("₹"+prize)}`);
+      const response = await fetch(WEB_APP_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, prize: "₹" + prize, t: Date.now() }) // timestamp avoids caching
+      });
       const data = await response.json();
-      return data; // {status:"ok" or "exists", prize:"..."}
+      return data; 
     } catch (err) {
       console.error("Error contacting Google Sheets:", err);
       return { status: "error" };
@@ -192,13 +195,12 @@
     let prize = cyclePrizes[cycleIndex];
     cycleIndex = (cycleIndex+1) % cyclePrizes.length;
 
-    // ✅ Check with Google Sheet BEFORE spinning
     let result = await checkAndSaveBeforeSpin(phone, prize);
 
     if(result.status === "exists"){
       modalTxt.textContent = `This number already played and won ${result.prize}`;
       modal.style.display = 'flex';
-      return; // block spin
+      return;
     }
     if(result.status === "ok"){
       const index = segments.findIndex(s=>s.includes(prize));
@@ -215,5 +217,3 @@
 </script>
 </body>
 </html>
-
-
