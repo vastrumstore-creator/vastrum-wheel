@@ -63,7 +63,7 @@
 </div>
 <script>
 (function(){
-  const segments = ["₹449","₹499","₹549","₹599","₹649","₹699","₹799","₹559"];
+  const segments = ["₹499","₹549","₹599","₹499","₹549","₹599","₹499","₹549"]; // wheel shows mix but only 3 unique
   const colors = ["#FF6F61","#6B5B95","#88B04B","#F7CAC9","#92A8D1","#F7786B","#DEB887","#20B2AA"];
   let spinning = false;
 
@@ -76,8 +76,7 @@
   const closeBtn = document.getElementById('closeBtn');
   let size, DPR = window.devicePixelRatio || 1;
 
-  // ✅ Replace with your Apps Script Web App URL
-  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby1lUxbOpPagULZvxcoHEwXjYPWYxX863qPhZYf95MQplgfp-UJtw_ZfIV4Y4Mz-Ltv8Q/exec";
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyujgNGMveWEW6CPPlhKG5wtJcGUcGELzvC2usL0LqeJdee6oNKawk_Cb3I3eXAKs1e4g/exec"; // replace with Apps Script Web App URL
 
   function resize(){
     const rect = canvas.parentElement.getBoundingClientRect();
@@ -156,7 +155,6 @@
       if(e.propertyName !== 'transform') return;
       canvas.removeEventListener('transitionend', handleSecondEnd);
       spinning = false;
-      // 🔓 Re-enable button after spin
       centerBtn.style.pointerEvents = "auto";
       centerBtn.style.opacity = "1";
       if(onEnd) onEnd();
@@ -182,30 +180,31 @@
       localStorage.setItem("deviceId", deviceId);
     }
 
-    try {
-      // 🚫 Disable spin while fetching
-      spinning = true;
-      centerBtn.style.pointerEvents = "none";
-      centerBtn.style.opacity = "0.6";
+    spinning = true;
+    centerBtn.style.pointerEvents = "none";
+    centerBtn.style.opacity = "0.6";
 
-      // ✅ send both phone + device to Apps Script
+    try {
       const res = await fetch(`${WEB_APP_URL}?device=${encodeURIComponent(deviceId)}&phone=${encodeURIComponent(phone)}`);
       const data = await res.json();
 
-      if(data.prize === "No more prizes"){
-        modalTxt.textContent = "No more prizes left for you!";
-        modal.style.display = "flex";
-        spinning = false;
-        centerBtn.style.pointerEvents = "auto";
-        centerBtn.style.opacity = "1";
+      if(data.warning){
+        const index = Math.floor(Math.random() * segments.length);
+        spinTo(index, 4, () => {
+          modalTxt.textContent = data.warning;
+          modal.style.display = "flex";
+        });
         return;
+      }
+
+      if(!data.prize){
+        throw new Error("No prize received");
       }
 
       const prize = data.prize;
       const index = segments.findIndex(s => s === prize);
-
       spinTo(index, 4, () => {
-        modalTxt.textContent = `🎉 You won ${prize} at ${data.time}`;
+        modalTxt.textContent = `🎉 You won ${prize}`;
         modal.style.display = "flex";
       });
 
