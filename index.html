@@ -17,7 +17,7 @@
   .knob {position: absolute;top: -28px;left: 50%;transform: translateX(-50%);width: 44px;height: 44px;background: radial-gradient(circle at 30% 30%, #ffae42, #e67e22);border-radius: 50%;box-shadow: 0 4px 8px rgba(0,0,0,0.25);z-index: 11;}
   .knob::after {content: "";position: absolute;bottom: -14px;left: 50%;transform: translateX(-50%);width: 0;height: 0;border-left: 12px solid transparent;border-right: 12px solid transparent;border-top: 18px solid #e67e22;}
   canvas{display:block;width:100%;height:100%;border-radius:50%;}
-  .center-btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:linear-gradient(180deg,#ffffff 0%, #f3efe9 100%);box-shadow:0 8px 20px rgba(47,109,99,0.08);font-weight:800;color:#173b36;font-size:13px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;z-index:9;pointer-events:auto;}
+  .center-btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:linear-gradient(180deg,#ffffff 0%, #f3efe9 100%);box-shadow:0 8px 20px rgba(47,109,99,0.08);font-weight:800;color:#173b36;font-size:13px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;z-index:9;pointer-events:auto;transition:opacity 0.3s;}
   .phone-row{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:0 8px;margin-top:6px}
   .phone-row img{height:20px}
   input[type="tel"]{padding:12px 10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-size:16px;width:86%;outline:none}
@@ -77,7 +77,7 @@
   let size, DPR = window.devicePixelRatio || 1;
 
   // ✅ Replace with your Apps Script Web App URL
-  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx2ouKICurrx4I7rjvrGI1aRXxsgZvOaajqgEzLaQ-ADFj3AHgfO0mtbc15t2oiGNPubA/exec";
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycby1lUxbOpPagULZvxcoHEwXjYPWYxX863qPhZYf95MQplgfp-UJtw_ZfIV4Y4Mz-Ltv8Q/exec";
 
   function resize(){
     const rect = canvas.parentElement.getBoundingClientRect();
@@ -123,7 +123,6 @@
   }
 
   function spinTo(index, duration, onEnd){
-    spinning = true;
     const segDeg = 360/segments.length;
     const mid = index * segDeg + segDeg/2;
     const stopAngle = (360 - mid) % 360;
@@ -157,6 +156,9 @@
       if(e.propertyName !== 'transform') return;
       canvas.removeEventListener('transitionend', handleSecondEnd);
       spinning = false;
+      // 🔓 Re-enable button after spin
+      centerBtn.style.pointerEvents = "auto";
+      centerBtn.style.opacity = "1";
       if(onEnd) onEnd();
     }
 
@@ -167,8 +169,12 @@
 
   centerBtn.onclick = async () => {
     if(spinning) return;
+
     let phone = normPhone(phoneInput.value);
-    if(!/^\d{10}$/.test(phone)){alert("Enter valid phone");return;}
+    if(!/^\d{10}$/.test(phone)){
+      alert("Enter valid 10-digit phone number");
+      return;
+    }
 
     let deviceId = localStorage.getItem("deviceId");
     if(!deviceId){
@@ -177,22 +183,38 @@
     }
 
     try {
-      const res = await fetch(`${WEB_APP_URL}?device=${encodeURIComponent(deviceId)}`);
+      // 🚫 Disable spin while fetching
+      spinning = true;
+      centerBtn.style.pointerEvents = "none";
+      centerBtn.style.opacity = "0.6";
+
+      // ✅ send both phone + device to Apps Script
+      const res = await fetch(`${WEB_APP_URL}?device=${encodeURIComponent(deviceId)}&phone=${encodeURIComponent(phone)}`);
       const data = await res.json();
+
       if(data.prize === "No more prizes"){
         modalTxt.textContent = "No more prizes left for you!";
         modal.style.display = "flex";
+        spinning = false;
+        centerBtn.style.pointerEvents = "auto";
+        centerBtn.style.opacity = "1";
         return;
       }
+
       const prize = data.prize;
-      const index = segments.findIndex(s => s.includes(prize.replace("₹","")));
+      const index = segments.findIndex(s => s === prize);
+
       spinTo(index, 4, () => {
         modalTxt.textContent = `🎉 You won ${prize} at ${data.time}`;
         modal.style.display = "flex";
       });
-    } catch(err){
+
+    } catch (err) {
       console.error(err);
       alert("Error contacting server.");
+      spinning = false;
+      centerBtn.style.pointerEvents = "auto";
+      centerBtn.style.opacity = "1";
     }
   };
 
