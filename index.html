@@ -5,26 +5,26 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Vastrum — Spin Wheel</title>
 <style>
-  :root{--bg:#FFF7EB;--card:#F7F5F2;--accent:#2F6D63;--muted:#6b857e;--white:#ffffff;}
-  *{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;}
-  body{margin:0;background:var(--bg);color:var(--accent);-webkit-font-smoothing:antialiased}
-  .wrap{max-width:520px;margin:12px auto;padding:16px}
-  .card{background:var(--card);border-radius:16px;padding:14px;box-shadow:0 8px 28px rgba(47,109,99,0.06)}
-  .brand{display:flex;align-items:center;justify-content:center;gap:10px;font-weight:800;letter-spacing:2px;text-align:center;font-size:20px;margin-bottom:20px}
-  .brand img{height:40px;}
-  .wheel-area{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative}
-  .wheel-frame{position:relative;width:100%;max-width:420px;aspect-ratio:1/1;}
-  .knob {position: absolute;top: -28px;left: 50%;transform: translateX(-50%);width: 44px;height: 44px;background: radial-gradient(circle at 30% 30%, #ffae42, #e67e22);border-radius: 50%;box-shadow: 0 4px 8px rgba(0,0,0,0.25);z-index: 11;}
-  .knob::after {content: "";position: absolute;bottom: -14px;left: 50%;transform: translateX(-50%);width: 0;height: 0;border-left: 12px solid transparent;border-right: 12px solid transparent;border-top: 18px solid #e67e22;}
-  canvas{display:block;width:100%;height:100%;border-radius:50%;}
-  .center-btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:linear-gradient(180deg,#ffffff 0%, #f3efe9 100%);box-shadow:0 8px 20px rgba(47,109,99,0.08);font-weight:800;color:#173b36;font-size:13px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;z-index:9;pointer-events:auto;transition:opacity 0.3s;}
-  .phone-row{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:0 8px;margin-top:6px}
-  .phone-row img{height:20px}
-  input[type="tel"]{padding:12px 10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-size:16px;width:86%;outline:none}
-  .notice{margin-top:8px;font-size:14px;color:var(--muted);text-align:center;}
-  .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:60}
-  .box{background:var(--white);padding:18px;border-radius:10px;min-width:240px;text-align:center}
-  .btn{margin-top:10px;padding:10px 14px;border-radius:8px;background:var(--accent);color:var(--white);border:none;font-weight:700}
+:root{--bg:#FFF7EB;--card:#F7F5F2;--accent:#2F6D63;--muted:#6b857e;--white:#ffffff;}
+*{box-sizing:border-box;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;}
+body{margin:0;background:var(--bg);color:var(--accent);-webkit-font-smoothing:antialiased}
+.wrap{max-width:520px;margin:12px auto;padding:16px}
+.card{background:var(--card);border-radius:16px;padding:14px;box-shadow:0 8px 28px rgba(47,109,99,0.06)}
+.brand{display:flex;align-items:center;justify-content:center;gap:10px;font-weight:800;letter-spacing:2px;text-align:center;font-size:20px;margin-bottom:20px}
+.brand img{height:40px;}
+.wheel-area{display:flex;flex-direction:column;align-items:center;gap:10px;position:relative}
+.wheel-frame{position:relative;width:100%;max-width:420px;aspect-ratio:1/1;}
+.knob {position: absolute;top: -28px;left: 50%;transform: translateX(-50%);width: 44px;height: 44px;background: radial-gradient(circle at 30% 30%, #ffae42, #e67e22);border-radius: 50%;box-shadow: 0 4px 8px rgba(0,0,0,0.25);z-index: 11;}
+.knob::after {content: "";position: absolute;bottom: -14px;left: 50%;transform: translateX(-50%);width: 0;height: 0;border-left: 12px solid transparent;border-right: 12px solid transparent;border-top: 18px solid #e67e22;}
+canvas{display:block;width:100%;height:100%;border-radius:50%;}
+.center-btn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);border-radius:50%;background:linear-gradient(180deg,#ffffff 0%, #f3efe9 100%);box-shadow:0 8px 20px rgba(47,109,99,0.08);font-weight:800;color:#173b36;font-size:13px;display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;z-index:9;pointer-events:auto;transition:opacity 0.3s;}
+.phone-row{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:0 8px;margin-top:6px}
+.phone-row img{height:20px}
+input[type="tel"]{padding:12px 10px;border-radius:10px;border:1px solid rgba(0,0,0,0.06);font-size:16px;width:86%;outline:none}
+.notice{margin-top:8px;font-size:14px;color:var(--muted);text-align:center;}
+.modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.45);z-index:60}
+.box{background:var(--white);padding:18px;border-radius:10px;min-width:240px;text-align:center}
+.btn{margin-top:10px;padding:10px 14px;border-radius:8px;background:var(--accent);color:var(--white);border:none;font-weight:700}
 </style>
 </head>
 <body>
@@ -39,10 +39,7 @@
         <div class="knob"></div>
         <canvas id="wheelCanvas"></canvas>
         <div id="centerBtn" class="center-btn">
-          <div>
-            <div style="font-weight:900;">Your product,</div>
-            <div style="font-weight:900;">your price</div>
-          </div>
+          <div><div style="font-weight:900;">Your product,</div><div style="font-weight:900;">your price</div></div>
         </div>
       </div>
       <div class="phone-row">
@@ -57,163 +54,149 @@
 
 <div id="modal" class="modal">
   <div class="box">
-    <div id="modalTxt" style="font-size:18px;font-weight:800">You won ₹499</div>
+    <div id="modalTxt" style="font-size:18px;font-weight:800"></div>
     <button id="closeBtn" class="btn">OK</button>
   </div>
 </div>
+
 <script>
-(function(){
-  const segments = ["₹499","₹549","₹599","₹499","₹549","₹599","₹499","₹549"]; // wheel shows mix but only 3 unique
-  const colors = ["#FF6F61","#6B5B95","#88B04B","#F7CAC9","#92A8D1","#F7786B","#DEB887","#20B2AA"];
-  let spinning = false;
+(async function(){
+  // CONFIG
+  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxN3Gjww_yoFN1fn3M55dYJqjJenUAcNoTj4n0bhwphNcIE1nhGOjHuD2_THE9Ss13cWw/exec"; 
+  const ALLOWED_PRIZES = ["₹499","₹549","₹599"]; // only winners
+  const SPINS = 5; 
+  const SPIN_DURATION = 4; // seconds
 
-  const canvas = document.getElementById('wheelCanvas');
-  const ctx = canvas.getContext('2d');
-  const centerBtn = document.getElementById('centerBtn');
-  const phoneInput = document.getElementById('phone');
-  const modal = document.getElementById('modal');
-  const modalTxt = document.getElementById('modalTxt');
-  const closeBtn = document.getElementById('closeBtn');
-  let size, DPR = window.devicePixelRatio || 1;
+  const canvas=document.getElementById('wheelCanvas');
+  const ctx=canvas.getContext('2d');
+  const centerBtn=document.getElementById('centerBtn');
+  const phoneInput=document.getElementById('phone');
+  const modal=document.getElementById('modal');
+  const modalTxt=document.getElementById('modalTxt');
+  const closeBtn=document.getElementById('closeBtn');
+  let spinning=false;
+  let size,DPR=window.devicePixelRatio||1;
 
-  const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyujgNGMveWEW6CPPlhKG5wtJcGUcGELzvC2usL0LqeJdee6oNKawk_Cb3I3eXAKs1e4g/exec"; // replace with Apps Script Web App URL
+  const segments = [
+    "₹499","₹649","₹549","₹699",
+    "₹599","₹749","₹799","₹849"
+  ];
+
+  const colors = [
+    "#FF6F61","#6B5B95","#88B04B","#F7CAC9",
+    "#92A8D1","#F7786B","#DEB887","#20B2AA"
+  ];
 
   function resize(){
-    const rect = canvas.parentElement.getBoundingClientRect();
-    size = rect.width;
-    canvas.width = size * DPR;
-    canvas.height = size * DPR;
+    const rect=canvas.parentElement.getBoundingClientRect();
+    size=rect.width;
+    canvas.width=size*DPR;
+    canvas.height=size*DPR;
     ctx.setTransform(DPR,0,0,DPR,0,0);
     drawWheel();
-    const btnSize = size * 0.36;
-    centerBtn.style.width = btnSize + 'px';
-    centerBtn.style.height = btnSize + 'px';
+    const btnSize=size*0.36;
+    centerBtn.style.width=btnSize+'px';
+    centerBtn.style.height=btnSize+'px';
   }
 
   function drawWheel(){
-    const cx = size/2, cy = size/2, radius = size*0.45, innerR = size*0.18;
-    const arc = (2*Math.PI)/segments.length;
+    const cx=size/2,cy=size/2,radius=size*0.45,innerR=size*0.18;
+    const arc=(2*Math.PI)/segments.length;
     ctx.clearRect(0,0,canvas.width,canvas.height);
     ctx.save();
-    ctx.translate(cx, cy);
+    ctx.translate(cx,cy);
     for(let i=0;i<segments.length;i++){
-      const ang = i*arc - Math.PI/2;
+      const ang=i*arc-Math.PI/2;
       ctx.beginPath();
-      ctx.fillStyle = colors[i % colors.length];
+      ctx.fillStyle=colors[i % colors.length];
       ctx.moveTo(0,0);
       ctx.arc(0,0,radius,ang,ang+arc,false);
       ctx.fill();
       ctx.save();
-      const mid = ang+arc/2;
-      ctx.translate(Math.cos(mid)*radius*0.65, Math.sin(mid)*radius*0.65);
+      const mid=ang+arc/2;
+      ctx.translate(Math.cos(mid)*radius*0.65,Math.sin(mid)*radius*0.65);
       ctx.rotate(mid+Math.PI/2);
-      ctx.fillStyle = "#fff";
-      ctx.font = `700 ${Math.max(16,Math.round(radius*0.12))}px sans-serif`;
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
+      ctx.fillStyle="#fff";
+      ctx.font=`700 ${Math.max(16,Math.round(radius*0.12))}px sans-serif`;
+      ctx.textAlign="center";
+      ctx.textBaseline="middle";
       ctx.fillText(segments[i],0,0);
       ctx.restore();
     }
     ctx.beginPath();
-    ctx.fillStyle = "#fff";
+    ctx.fillStyle="#fff";
     ctx.arc(0,0,innerR,0,Math.PI*2);
     ctx.fill();
     ctx.restore();
   }
 
-  function spinTo(index, duration, onEnd){
-    const segDeg = 360/segments.length;
-    const mid = index * segDeg + segDeg/2;
-    const stopAngle = (360 - mid) % 360;
-    const baseSpins = 5 * 360;
-    const overshoot = 6;
-
-    const toOvershoot = baseSpins + stopAngle + overshoot;
-    const toFinal    = baseSpins + stopAngle;
-
-    canvas.style.transition = 'none';
-    canvas.style.transform = 'rotate(0deg)';
-
-    requestAnimationFrame(()=>{
-      requestAnimationFrame(()=>{
-        canvas.style.transition = `transform ${duration}s cubic-bezier(.16,.84,.2,1)`;
-        canvas.style.transform = `rotate(${toOvershoot}deg)`;
-      });
-    });
-
-    function handleFirstEnd(e){
-      if(e.propertyName !== 'transform') return;
-      canvas.removeEventListener('transitionend', handleFirstEnd);
-      canvas.style.transition = 'transform 0.4s cubic-bezier(.2,.8,.2,1)';
-      requestAnimationFrame(()=>{
-        canvas.style.transform = `rotate(${toFinal}deg)`;
-      });
-      canvas.addEventListener('transitionend', handleSecondEnd);
-    }
-
-    function handleSecondEnd(e){
-      if(e.propertyName !== 'transform') return;
-      canvas.removeEventListener('transitionend', handleSecondEnd);
-      spinning = false;
-      centerBtn.style.pointerEvents = "auto";
-      centerBtn.style.opacity = "1";
-      if(onEnd) onEnd();
-    }
-
-    canvas.addEventListener('transitionend', handleFirstEnd);
-  }
-
   function normPhone(p){return p.replace(/\D/g,'').replace(/^91/,'').replace(/^0/,'');}
+  function randChoice(a){return a[Math.floor(Math.random()*a.length)];}
 
-  centerBtn.onclick = async () => {
+  centerBtn.onclick=async function(){
     if(spinning) return;
-
-    let phone = normPhone(phoneInput.value);
+    let phone=normPhone(phoneInput.value);
     if(!/^\d{10}$/.test(phone)){
       alert("Enter valid 10-digit phone number");
       return;
     }
-
-    let deviceId = localStorage.getItem("deviceId");
+    let deviceId=localStorage.getItem("deviceId");
     if(!deviceId){
-      deviceId = "dev-" + Math.random().toString(36).substr(2,9);
-      localStorage.setItem("deviceId", deviceId);
+      deviceId="dev-"+Math.random().toString(36).substr(2,9);
+      localStorage.setItem("deviceId",deviceId);
     }
+    spinning=true;
+    centerBtn.style.pointerEvents="none";
+    centerBtn.style.opacity="0.6";
 
-    spinning = true;
-    centerBtn.style.pointerEvents = "none";
-    centerBtn.style.opacity = "0.6";
+    try{
+      const prize=randChoice(ALLOWED_PRIZES);
+      const indexes=segments.map((val,i)=>val===prize?i:-1).filter(i=>i>=0);
+      const targetIndex=randChoice(indexes);
+      const segmentAngle = 360 / segments.length;
+      const stopAngle = (segments.length - targetIndex) * segmentAngle - (segmentAngle / 2);
+      const totalRotation = (SPINS * 360) + stopAngle;
 
-    try {
-      const res = await fetch(`${WEB_APP_URL}?device=${encodeURIComponent(deviceId)}&phone=${encodeURIComponent(phone)}`);
-      const data = await res.json();
+      canvas.style.transition='none';
+      canvas.style.transform='rotate(0deg)';
+      void canvas.offsetWidth;
+      canvas.style.transition=`transform ${SPIN_DURATION}s cubic-bezier(.33,1,.68,1)`;
+      canvas.style.transform=`rotate(${totalRotation}deg)`;
 
-      if(data.warning){
-        const index = Math.floor(Math.random() * segments.length);
-        spinTo(index, 4, () => {
-          modalTxt.textContent = data.warning;
-          modal.style.display = "flex";
-        });
-        return;
-      }
+      // ✅ Show prize only after spin completes (4s)
+      canvas.addEventListener('transitionend',function handler(e){
+        if(e.propertyName!=='transform') return;
+        canvas.removeEventListener('transitionend',handler);
 
-      if(!data.prize){
-        throw new Error("No prize received");
-      }
+        spinning=false;
+        centerBtn.style.pointerEvents="auto";
+        centerBtn.style.opacity="1";
 
-      const prize = data.prize;
-      const index = segments.findIndex(s => s === prize);
-      spinTo(index, 4, () => {
-        modalTxt.textContent = `🎉 You won ${prize}`;
-        modal.style.display = "flex";
+        fetch(`${WEB_APP_URL}?device=${encodeURIComponent(deviceId)}&phone=${encodeURIComponent(phone)}&prize=${encodeURIComponent(prize)}`)
+          .then(res => res.text())
+          .then(msg => {
+            if (msg.includes("ALREADY_USED")) {
+              modalTxt.textContent = "⚠️ This phone number has already used its spin.";
+            } else if (msg.includes("SUCCESS") || msg.includes("prize")) {
+              modalTxt.textContent = `🎉 You won ${prize}`;
+            } else {
+              modalTxt.textContent = "⚠️ Error saving your spin. Try again.";
+            }
+            modal.style.display="flex";
+          })
+          .catch(err=>{
+            console.warn("Save failed:",err);
+            modalTxt.textContent="⚠️ Network error. Try again.";
+            modal.style.display="flex";
+          });
       });
 
-    } catch (err) {
-      console.error(err);
+    }catch(err){
+      console.error("Spin error →",err);
       alert("Error contacting server.");
-      spinning = false;
-      centerBtn.style.pointerEvents = "auto";
-      centerBtn.style.opacity = "1";
+      spinning=false;
+      centerBtn.style.pointerEvents="auto";
+      centerBtn.style.opacity="1";
     }
   };
 
